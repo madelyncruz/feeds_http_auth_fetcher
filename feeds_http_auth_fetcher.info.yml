@@ -1,5 +1,5 @@
 name: Feeds HTTP Authorization Fetcher
 description: Add an HTTP Authorization header to the regular HTTP fetcher
-core: 8.x
+core_version_requirement: ^8 || ^9
 package: Feeds
 type: module
