@@ -45,6 +45,7 @@ class HttpAuthFetcherFeedForm extends HttpFetcherFeedForm {
   }
     public function submitConfigurationForm(array &$form, FormStateInterface $form_state, FeedInterface $feed = NULL)
     {
+        parent::submitConfigurationForm($form, $form_state, $feed);
         $feed_config = $feed->getConfigurationFor($this->plugin);
         $feed_config['token'] = $form_state->getValue('token');
         $feed->setConfigurationFor($this->plugin, $feed_config);
