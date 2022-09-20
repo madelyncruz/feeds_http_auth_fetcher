@@ -38,10 +38,20 @@ class HttpAuthFetcher extends HTTPFetcher {
      * {@inheritdoc}
      */
     public function fetch(FeedInterface $feed, StateInterface $state) {
-        $sink = $this->fileSystem->tempnam('temporary://', 'feeds_http_fetcher');
+        // Default destination.
+        $destination = 'temporary://';
+        if ($this->configFactory->get('feeds.settings')->get('feeds_temporary_dir')) {
+            $destination = 'public://';
+            // Remove all files by mask before imported files as not needed any more.
+            array_map('unlink', glob($this->fileSystem->realpath($destination) . "/feeds_http_fetcher*"));
+        }
+
+        $sink = $this->fileSystem->tempnam($destination, 'feeds_http_fetcher');
         $sink = $this->fileSystem->realpath($sink);
 
-        $response = $this->get($feed->getSource(), $sink, $this->getCacheKey($feed),$feed->getConfigurationFor($this)['token']);
+        // Get cache key if caching is enabled.
+        $cache_key = $this->useCache() ? $this->getCacheKey($feed) : FALSE;
+        $response = $this->get($feed->getSource(), $sink, $cache_key,$feed->getConfigurationFor($this)['token']);
         // @todo Handle redirects.
         // @codingStandardsIgnoreStart
         // $feed->setSource($response->getEffectiveUrl());
